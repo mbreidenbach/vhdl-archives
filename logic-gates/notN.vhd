@@ -2,10 +2,10 @@
 -- Company:   Rochester  Institute  of  Technology (RIT)
 -- Engineer: Matthew Breidenbach (mcb7173@rit.edu)
 --
--- Create  Date:     <CREATION_TIME_HERE >
+-- Create  Date:     1/16/20
 -- Design  Name:     notN
 -- Module  Name:     notN - dataflow
--- Project  Name:    <PROJECT_NAME_HERE >
+-- Project  Name:    project_1
 -- Target  Devices: Basys3
 --
 -- Description: N-bit  bitwise  NOT  unit

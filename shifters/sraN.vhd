@@ -35,6 +35,11 @@ begin
         aSRA(i)(N-1  downto  N-i)  <= (others =>  A(N-1));
         end  generate  right_fill;
     end  generate  generateSRA;
-    
-    Y <= aSRA(to_integer(unsigned(SHIFT_AMT)));
+    shift_if: process (SHIFT_AMT, A, aSRA) begin
+         if (to_integer(unsigned(SHIFT_AMT)) > 31) then
+            Y <= x"00000000";
+        else
+            Y <= aSRA(to_integer(unsigned(SHIFT_AMT)));
+        end if;
+        end process;
 end behavioral;

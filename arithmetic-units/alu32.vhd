@@ -2,10 +2,10 @@
 -- Company:   Rochester  Institute  of  Technology (RIT)
 -- Engineer: Matthew Breidenbach (mcb7173@rit.edu)
 --
--- Create  Date:     <CREATION_TIME_HERE >
+-- Create  Date:     1/16/20
 -- Design  Name:     alu32
 -- Module  Name:     alu32 - structural
--- Project  Name:    <PROJECT_NAME_HERE >
+-- Project  Name:    project_1
 -- Target  Devices: Basys3
 --
 -- Description: Partial 32-bit  Arithmetic  Logic  Unit
@@ -85,12 +85,32 @@ Component  sraN is
             Y           : OUT  std_logic_vector(N-1  downto  0));
 	end Component;
 	
-    signal  or_result : std_logic_vector (31  downto  0);
-	signal  and_result : std_logic_vector (31  downto  0);
-	signal  xor_result : std_logic_vector (31  downto  0);
-	signal  sll_result : std_logic_vector (31  downto  0);
-	signal  srl_result : std_logic_vector (31  downto  0);
-	signal  sra_result : std_logic_vector (31  downto  0);
+--Declare adder/subtype
+Component RippleCarryFullAdder is
+	generic ( 	N : integer := 32);
+	port	(	OP : in std_logic;
+				A : in std_logic_vector(N-1 downto 0);
+				B : in std_logic_vector(N-1 downto 0);
+				Sum : out std_logic_vector(N-1 downto 0)
+			);
+end component;
+
+component CarrySaveMultiplier is
+	generic ( 	N : integer := 32);
+	port	(   A : in std_logic_vector(N/2 -1 downto 0); --m col
+				B : in std_logic_vector(N/2 -1 downto 0); --q row
+				Product : out std_logic_vector(N-1 downto 0)
+			);
+end component;
+	
+    signal  or_result : std_logic_vector (N-1  downto  0);
+	signal  and_result : std_logic_vector (N-1  downto  0);
+	signal  xor_result : std_logic_vector (N-1  downto  0);
+	signal  sll_result : std_logic_vector (N-1  downto  0);
+	signal  srl_result : std_logic_vector (N-1  downto  0);
+	signal  sra_result : std_logic_vector (N-1  downto  0);
+	signal  RCFA_result : std_logic_vector(N-1  downto  0);
+	signal mult_result : std_logic_vector(N-1 downto 0);
 	
 
 begin
@@ -116,13 +136,21 @@ begin
     
     -- Instantiate  the  SLL  unit
     sll_comp: sllN
-        generic  map ( N => 32 )
+        generic  map ( N => 32)
         port  map ( A=> A, SHIFT_AMT => B, Y => sll_result );
 		
 		
 	sra_comp: sraN
 		generic map (N => 32)
 		port map (A => A, SHIFT_AMT => B, Y => sra_result);
+	
+	RCFA_comp : RippleCarryFullAdder
+		generic map (N => 32)
+		port map (OP => OP(0), A => A, B => B, Sum => RCFA_result);
+	
+	mult_comp : CarrySaveMultiplier
+		generic map (N => 32)
+		port map (A => A(N/2 -1 downto 0), B => B(N/2 -1 downto 0), Product => mult_result);
 		
     -- Use OP to  control  which  operation  to show/perform
 	with OP select Y <=
@@ -131,7 +159,9 @@ begin
 		xor_result when "1011",
 		sll_result when "1100",
 		srl_result when "1101",
-		sra_result when others;
+		sra_result when "1110",
+		mult_result when "0110",
+		RCFA_result when others;
 		
 
 end  structural;

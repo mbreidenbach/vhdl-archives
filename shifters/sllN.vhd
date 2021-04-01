@@ -2,10 +2,10 @@
 -- Company:   Rochester  Institute  of  Technology (RIT)
 -- Engineer: Matthew Breidenbach (mcb7173@rit.edu)
 --
--- Create  Date:     <CREATION_TIME_HERE >
+-- Create  Date:     1/16/20
 -- Design  Name:     sllN
 -- Module  Name:     sllN - behavioral
--- Project  Name:    <PROJECT_NAME_HERE >
+-- Project  Name:    project_1
 -- Target  Devices: Basys3
 --
 -- Description: N-bit  logical  left  shift (SLL) unit
@@ -35,6 +35,11 @@ begin
         aSLL(i)(i-1  downto  0)  <= (others =>  '0');
         end  generate  left_fill;
     end  generate  generateSLL;
-    
-    Y <= aSLL(to_integer(unsigned(SHIFT_AMT)));
+    shift_if: process (SHIFT_AMT, A, aSLL) begin
+     if (to_integer(unsigned(SHIFT_AMT)) > 31) then
+		Y <= x"00000000";
+	else
+		Y <= aSLL(to_integer(unsigned(SHIFT_AMT)));
+	end if;
+	end process;
 end behavioral;

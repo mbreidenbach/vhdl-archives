@@ -35,6 +35,11 @@ begin
         aSRL(i)(N-1  downto  N-i)  <= (others =>  '0');
         end  generate  right_fill;
     end  generate  generateSRL;
-    
-    Y <= aSRL(to_integer(unsigned(SHIFT_AMT)));
+    shift_if: process (SHIFT_AMT, A, aSRL) begin
+         if (to_integer(unsigned(SHIFT_AMT)) > 31) then
+            Y <= x"00000000";
+        else
+            Y <= aSRL(to_integer(unsigned(SHIFT_AMT)));
+        end if;
+        end process;
 end behavioral;
